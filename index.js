@@ -1,18 +1,18 @@
-const {
-    ImgBucketHandler
-} = require("./s3Api")
+const ImgBucketHandler = require("./s3Api")
 
 require('dotenv').config()
 
 const {
-  S3_REGION,
-  S3_BUCKET_NAME
+    S3_REGION,
+    S3_BUCKET_NAME
 } = process.env;
 
 
 (async () => {
     if (process.argv.length < 3) {
-        throw new Error("Invalid input arguments!")
+        console.error("Invalid input arguments!")
+        displayHelp()
+        return
     }
 
     const [_node, _script, command, path] = process.argv;
@@ -21,17 +21,33 @@ const {
 
     const cmnd = command.trim()
 
-    if (cmnd === "list") {
-       await bucketHandler.listImages()
+    if (cmnd === "help") {
+        displayHelp()
+        return;
     }
 
+    if (cmnd === "list") {
+        return await bucketHandler.listImages()
+    }
 
     if (path && cmnd === "upload") {
-        await bucketHandler.uploadImage(path)
+        return await bucketHandler.uploadImage(path)
     }
 
-    const key = path;
-    if (key && cmnd === "download") {
-        await bucketHandler.downloadImage(key)
+    if (path && cmnd === "download") {
+        return await bucketHandler.downloadImage(key)
     }
+
+    displayHelp()
 })()
+
+function displayHelp() {
+    console.log(
+        `
+        Input format ::: <executable> <command> (arg?)
+        Commands:
+             - list - List all bucket images
+             - upload <path_to_image> - Upload an image to bucket
+             - downnload <image_key> - Download image matching input key
+    `)
+}

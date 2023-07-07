@@ -33,7 +33,8 @@ class ImgBucketHandler {
       const {
         Contents
       } = await this.client.send(command)
-      console.log(`Images in bucket ${this.bucketName}:\n${Contents}`)
+      console.log(`Images in bucket ${this.bucketName}:\n`)
+      console.dir(Contents)
       return Contents
     } catch (err) {
       console.error(err)
@@ -113,6 +114,7 @@ class ImgBucketHandler {
       console.error(err)
     }
 
+    // Compress / resize image before upload
     async function compressUpload(blob) {
       const compressed = await sharp(blob).resize(450, 300, {
         fit: 'inside'
